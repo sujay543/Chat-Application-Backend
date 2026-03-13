@@ -1,12 +1,25 @@
 const dotenv = require('dotenv');
 dotenv.config({path: './config.env'});
 const express = require('express');
+const userRouter = require('./routes/userRoutes');
+const mongoose = require('mongoose');
 const app = express();
-const port = process.env.PORT;
-if(!port)
-{
-    port = 3000;
-}
+app.use(express.json());
+
+
+app.use('/api/v1/users',userRouter);
+
+app.all(/.*/,(req,res,next) => {
+  res.send(`cannot find this ${req.originalUrl}`);
+})
+
+mongoose.connect(process.env.PASSWORDSTRING).then(() => {
+    console.log('database successfully connected');
+}).catch((err)=> {
+    console.log(err);
+})
+
+const port = process.env.PORT || 3000;
 app.listen(port,() => {
     console.log('app is running on port ',port);
 })
