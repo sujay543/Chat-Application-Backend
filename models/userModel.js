@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 const validator = require('validator');
 
 const userSchema = new mongoose.Schema(
@@ -37,14 +38,35 @@ const userSchema = new mongoose.Schema(
             type: String,
             enum: ['user','admin'],
             default: 'user'
-        }
+        },
+        passwordChangeAt: Date
     },
     {
         timestamps: true
     }
 )
 
+userSchema.pre('save', async function(){
+    if(!this.isModified('password')) return;
+    this.password = await bcrypt.hash(this.password,Number(process.env.SALTROUND));
+    this.confirmPassword = undefined;
+});
+
+userSchema.pre('save', function(){
+    if (!this.isModified('password') || this.isNew) {
+        return;
+    }
+    this.passwordChangeAt = Date.now() - 1000;
+});
+
+userSchema.methods.checkPassowrd = function(userpassword,reqestedPassword){
+    return bcrypt.compare(reqestedPassword,userpassword);
+}
 const User = mongoose.model('User',userSchema);
+
+
+
+
 
 module.exports = User;
 
