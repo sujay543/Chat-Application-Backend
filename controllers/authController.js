@@ -1,12 +1,13 @@
 const User = require('../models/userModel.js');
-const jwtToken = require('jsonwebtoken');
+const createToken = require('../utils/createToken.js');
+const AppError = require('../utils/appError.js');
 
-function getToken(userId){
-    const token = jwtToken.sign({id: userId},process.env.SECRETKEY,{expiresIn: process.env.TOKENEXPIRES});
-    return token;
-}
+exports.registerUser = async(req,res,next) => {
+    const existingUser = await User.findOne({ email: req.body.email });
 
-exports.registerUser = async(req,res) => {
+        if (existingUser) {
+            return next(new AppError('User already exists', 400));
+        }
     const user = await User.create(
         {
             username: req.body.username,
@@ -17,16 +18,7 @@ exports.registerUser = async(req,res) => {
             role: req.body.role,
         }
     )
-
-    const token = getToken(user.id);
-    
-    res.status(201).json(
-        {
-            status:'success',
-            message: 'user has been created',
-            token
-        }
-    )
+    createToken(user,200,res);
 }
 
 // exports.loginUser = async(req,res) => {

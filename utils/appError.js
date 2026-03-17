@@ -2,10 +2,12 @@ class AppError extends Error{
     constructor(message,statusCode)
     {
         super(message);
-        error.statusCode = `${statusCode}`.startsWith('4') ? 'Error' : 'Fail';
-        error.message = message;
-        
-        
-        
+
+        this.statusCode = statusCode; // MUST be number
+        this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
+
+        Error.captureStackTrace(this, this.constructor);
     }
 }
+
+module.exports = AppError;
