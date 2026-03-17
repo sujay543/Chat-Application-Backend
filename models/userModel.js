@@ -59,9 +59,9 @@ userSchema.pre('save', function(){
     this.passwordChangeAt = Date.now() - 1000;
 });
 
-userSchema.methods.checkPassowrd = function(userpassword,reqestedPassword){
-    return bcrypt.compare(reqestedPassword,userpassword);
-}
+userSchema.methods.correctPassword = async function(candidatePassword) {
+    return bcrypt.compare(candidatePassword, this.password);
+};
 const User = mongoose.model('User',userSchema);
 
 

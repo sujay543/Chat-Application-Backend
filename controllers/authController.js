@@ -21,20 +21,15 @@ exports.registerUser = async(req,res,next) => {
     createToken(user,200,res);
 }
 
-// exports.loginUser = async(req,res) => {
-//     const user = await User.find({email: req.email});
-//     const isExist = user.checkPassword(user.password,req.password);
-
-//     if(!isExist) return 
-//     const token = getToken(user.id);
-    
-//     res.status(201).json(
-//         {
-//             status:'success',
-//             message: 'user has been created',
-//             token
-//         }
-//     )
-// }
+exports.loginUser = async(req,res,next) => {
+    if(!req.body.email || !req.body.password)
+    {
+        return next(new AppError('please provide email and password for login',404));
+    }
+    const user = await User.findOne({email: req.body.email});
+    const isExist = await user.correctPassword(req.body.password);
+    if(!isExist) return next(new AppError('user does not exist',403));
+    createToken(user,200,res);
+}
 
 
