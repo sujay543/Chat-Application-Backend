@@ -59,6 +59,17 @@ userSchema.pre('save', function(){
     this.passwordChangeAt = Date.now() - 1000;
 });
 
+userSchema.methods.changePasswordAfter = async function(jwtTimeStamp) {
+    // console.log(this.passwordChangedAt.getTime()/1000);
+    // console.log(jwtTimeStamp);
+    if(this.passwordChangedAt)
+    {
+        const changedTimestamp = this.passwordChangedAt.getTime()/1000;
+        return changedTimestamp > jwtTimeStamp;
+    }
+    return false;
+}
+
 userSchema.methods.correctPassword = async function(candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password);
 };

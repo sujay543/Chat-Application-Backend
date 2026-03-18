@@ -5,5 +5,5 @@ const userRouter = express.Router();
 
 userRouter.route('/').post(authController.registerUser);
 userRouter.route('/login').post(authController.loginUser);
-userRouter.route('/getAllUser').get(authController.protect,userController.getUsers);
+userRouter.route('/getAllUser').get(authController.protect,authController.restrictTo('admin'),userController.getUsers);
 module.exports = userRouter;

@@ -1,6 +1,7 @@
 const User = require('../models/userModel.js');
 const createToken = require('../utils/createToken.js');
 const AppError = require('../utils/appError.js');
+const jwt = require('jsonwebtoken');
 const catchAsync = require('../utils/catchAsync.js');
 
 exports.registerUser = catchAsync(async(req,res,next) => {
@@ -33,6 +34,37 @@ exports.loginUser = catchAsync(async(req,res,next) => {
     createToken(user,200,res);
 })
 
-exports.protect = async(req,res,next) => {
-    console.log(req.headers.authorization);
+exports.protect = catchAsync(async(req,res,next) => {
+    let token;
+    if(req.headers.authorization || req.headers.authorization.startsWith('Bearer'))
+    {
+         token = req.headers.authorization.split(' ')[1];
+    }
+    if(!token)
+    {
+        return next(new AppError('user must need to logIn',403));
+    }
+    const decoded = jwt.verify(token,process.env.SECRETKEY);
+    const user = await User.findById(decoded.id);
+    if(!user)
+    {
+        return next(new AppError('no user found',404));
+    }
+    if(await user.changePasswordAfter(decoded.iat))
+    {
+        return next(new AppError('You must login now',401));
+    }
+    req.user = user;
+    next()
+})
+
+exports.restrictTo = (...roles) =>
+{
+    return (req,res,next) => {
+        if(!roles.includes(req.user.role))
+        {
+            return next(new AppError('you are not allowed to perform this action',401));
+        }
+        next();
+    }
 }
