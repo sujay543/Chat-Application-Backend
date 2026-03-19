@@ -29,6 +29,10 @@ exports.loginUser = catchAsync(async(req,res,next) => {
         return next(new AppError('please provide email and password for login',404));
     }
     const user = await User.findOne({email: req.body.email});
+    if(!user)
+    {
+        return next('user not found',404);
+    }
     const isExist = await user.correctPassword(req.body.password);
     if(!isExist) return next(new AppError('user does not exist',403));
     createToken(user,200,res);
@@ -36,7 +40,7 @@ exports.loginUser = catchAsync(async(req,res,next) => {
 
 exports.protect = catchAsync(async(req,res,next) => {
     let token;
-    if(req.headers.authorization || req.headers.authorization.startsWith('Bearer'))
+    if(req.headers.authorization && req.headers.authorization.startsWith('Bearer'))
     {
          token = req.headers.authorization.split(' ')[1];
     }
