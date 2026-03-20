@@ -2,6 +2,8 @@ const dotenv = require('dotenv');
 dotenv.config({path: './config.env'});
 const express = require('express');
 const userRouter = require('./routes/userRoutes');
+const chatRouter = require('./routes/chatRoute.js');
+const messageRouter = require('./routes/messageRoutes.js');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const app = express();
@@ -20,6 +22,9 @@ if(process.env.NODE_ENV === 'development')
 
 
 app.use('/api/v1/users',userRouter);
+app.use('/api/v1/chat',chatRouter);
+app.use('/api/v1/message',messageRouter);
+
 app.use(globalErrorHandler);
 
 app.all(/.*/,(req,res,next) => {
