@@ -39,3 +39,42 @@ exports.sendMessage = catchAsync(async(req,res,next) => {
     }
     )
 })
+
+exports.getlatestMessage = catchAsync(async (req,res,next) => {
+    const chatId = req.params.id;
+     if(!chatId){ return next(new AppError('chatId not found',404)); }
+    const chat = await Chat.findById(chatId).populate('latestMessage'); 
+    if (!chat) {
+    return next(new AppError('Chat not found', 404));
+    }
+    if(!chat.users.includes(req.user.id))
+    {
+        return next(new AppError('Invalid user',403));
+    }
+    res.status(200).json(
+        {
+            status: 'success',
+            message: chat.latestMessage.content
+        }
+    )
+})
+
+exports.getAllMessage = catchAsync( async (req,res,next) => {
+    const chatId = req.params.id;
+    if(!chatId){return next(new AppError('chat Id not found',404)); }
+    const chat = await Chat.findById(chatId);
+    if(!chat){ return next(new AppError('chat not found',404)); }
+     if(!chat.users.includes(req.user.id))
+    {
+        return next(new AppError('Invalid user',403));
+    }
+    const messages = await Message.find({chatId: req.params.id}).populate('sender','username email').sort(
+{createdAt: 1});
+    res.status(200).json(
+        {
+            status: 'success',
+            messages
+        }
+    )
+})
+
