@@ -36,3 +36,16 @@ exports.createChat = catchAsync(async(req,res,next) => {
         }
     )
 })
+
+exports.getChats = catchAsync(async(req,res,next) => {
+    const chats = await Chat.find({
+    users: req.user._id
+    }).populate('users','-password').populate('latestMessage').sort({updatedAt: -1});
+    res.status(200).json({
+    status: "success",
+    results: chats.length,
+    data: {
+      chats: chats,
+    },
+  });
+})
