@@ -34,6 +34,11 @@ const messageSchema = mongoose.Schema(
     }
 )
 
+messageSchema.pre(/^find/, function(){
+   this.select('-__v');
+})
+
+
 const Message = mongoose.model('Message',messageSchema);
 
 module.exports = Message;
