@@ -29,7 +29,8 @@ exports.sendMessage = catchAsync(async(req,res,next) => {
     })
 
     await Chat.findByIdAndUpdate(chatId,{latestMessage: message._id});
-
+    const io = req.app.get("io");
+    io.emit("receiveMessage", message);
     res.status(201).json(
     {
         status: 'success',

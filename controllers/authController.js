@@ -31,10 +31,10 @@ exports.loginUser = catchAsync(async(req,res,next) => {
     const user = await User.findOne({email: req.body.email});
     if(!user)
     {
-        return next('user not found',404);
+        return next(new AppError('User not found', 404));
     }
     const isExist = await user.correctPassword(req.body.password);
-    if(!isExist) return next(new AppError('user does not exist',403));
+    if(!isExist) return next(new AppError('user does not exist',400));
     createToken(user,200,res);
 })
 
