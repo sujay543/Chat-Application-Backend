@@ -16,6 +16,9 @@ app.set("io", io);
 app.use(express.json());
 const globalErrorHandler = require('./utils/errorControl.js');
 const AppError = require('./utils/appError.js');
+const cors = require("cors");
+
+app.use(cors());
 // all routes above this
 
 
@@ -23,10 +26,6 @@ const AppError = require('./utils/appError.js');
 io.on("connection", (socket) => {
     console.log('a new user has connected',socket.id);
 })
-
-
-
-
 
 if(process.env.NODE_ENV === 'development')
 {
