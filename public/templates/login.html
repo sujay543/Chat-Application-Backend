@@ -44,6 +44,22 @@
     button:hover {
       background: #0056b3;
     }
+
+    #validation{
+      display: none;
+    }
+
+    #loginForm{
+      padding-right: 20px;
+    }
+    #submitButton{
+      margin-left: 10px;
+      border-radius: 20px;
+    }
+
+    input{
+      border-radius: 20px;
+    }
   </style>
 </head>
 
@@ -55,9 +71,10 @@
     <form id="loginForm">
       <input type="email" id="email" placeholder="Enter email" required>
       <input type="password" id="password" placeholder="Enter password" required>
-      <button type="submit">Login</button>
+      <p id="validPassword"></p>
+      <button id="submitButton" type="submit">Login</button>
     </form>
   </div>
-
+<script src="../scripts/login.js"></script>
 </body>
 </html>

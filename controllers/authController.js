@@ -34,7 +34,7 @@ exports.loginUser = catchAsync(async(req,res,next) => {
         return next(new AppError('User not found', 404));
     }
     const isExist = await user.correctPassword(req.body.password);
-    if(!isExist) return next(new AppError('user does not exist',400));
+    if(!isExist) return next(new AppError('Invalid password',403));
     createToken(user,200,res);
 })
 
