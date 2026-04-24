@@ -40,11 +40,18 @@ exports.getChats = catchAsync(async(req,res,next) => {
     const chats = await Chat.find({
     users: req.user._id
     }).populate('users','-password').populate('latestMessage').sort({updatedAt: -1});
+    const formattedChats = chats.map(chat => {
+        const Otheruser = chat.users.find( user => user._id.toString() != req.user._id.toString());
+
+        return {
+            ChatId: chat._id,
+            name: Otheruser?.username,
+            userId: Otheruser?._id
+        }
+    })
     res.status(200).json({
     status: "success",
-    results: chats.length,
-    data: {
-      chats: chats,
-    },
+    results: formattedChats.length,
+    formattedChats: formattedChats
   });
 })
