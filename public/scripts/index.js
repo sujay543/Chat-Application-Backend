@@ -38,7 +38,7 @@ async function loadContacts()
       </div>
         <div class="contact-name">${user.name}</div>
       </div>
-      <div class="contact-meta">
+      <div class="contact-meta"></div>
     </div>`
     })
     document.querySelector(".contact-list").innerHTML = html;
