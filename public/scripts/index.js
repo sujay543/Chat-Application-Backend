@@ -46,7 +46,7 @@ async function loadContacts()
 
 async function renderMessages(chatId) {
   const container = document.getElementById('messages');
-    console.log(chatId);
+    selectedChatId = chatId;
   try {
     const res = await fetch(`http://127.0.0.1:8000/api/v1/message/all/${chatId}`,{
   headers: {
@@ -72,16 +72,13 @@ async function renderMessages(chatId) {
 
 async function appendMessage(msg, scroll = true) {
   const container = document.getElementById('messages');
-  const isMe = msg.sender._id === currentUserId;
+
+  const isMe = msg.sender === currentUserId || msg.sender?._id === currentUserId;
+
+  const senderInitials = isMe ? 'ME' : '??';
 
   const row = document.createElement('div');
   row.className = `msg-row ${isMe ? 'sent' : 'received'}`;
-
-  const senderInitials = isMe
-    ? 'ME'
-    : msg.sender.username.substring(0, 2).toUpperCase();
-
-  const avClass = isMe ? 'av-blue' : 'av-green';
 
   const time = new Date(msg.createdAt).toLocaleTimeString([], {
     hour: '2-digit',
@@ -89,7 +86,7 @@ async function appendMessage(msg, scroll = true) {
   });
 
   row.innerHTML = `
-    ${!isMe ? `<div class="msg-avatar ${avClass}" style="font-size:10px;font-weight:600;">${senderInitials}</div>` : ''}
+    ${!isMe ? `<div class="msg-avatar">${senderInitials}</div>` : ''}
 
     <div class="msg-group ${isMe ? 'sent' : 'received'}">
       <div class="bubble ${isMe ? 'sent' : 'received'}">
@@ -98,7 +95,7 @@ async function appendMessage(msg, scroll = true) {
       <div class="msg-time">${time}</div>
     </div>
 
-    ${isMe ? `<div class="msg-avatar av-blue" style="font-size:10px;font-weight:600;">ME</div>` : ''}
+    ${isMe ? `<div class="msg-avatar">ME</div>` : ''}
   `;
 
   container.appendChild(row);
@@ -135,10 +132,9 @@ sendButton.addEventListener('click', async () => {
             })
         });
 
-        const data = await res.json();
-
+        const Message = await res.json();
         // ✅ append immediately (smooth UI)
-        appendMessage(data.message);
+        appendMessage(Message.data.message);
 
         document.getElementById("msgInput").value = "";
 
