@@ -16,3 +16,10 @@ exports.getUsers = catchAsync(async (req,res,next) => {
         }
     )
 })
+
+exports.getMe = (req, res) => {
+    res.status(200).json({
+        status: "success",
+        user: req.user
+    });
+};

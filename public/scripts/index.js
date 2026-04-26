@@ -1,7 +1,21 @@
 const sendButton = document.getElementById("sendBtn");
 // const loadUsers = document.querySelector(".chat-list");
+let currentUserId;
+let selectedChatId = null; 
+async function loadCurrentUser() {
+  const res = await fetch('http://127.0.0.1:8000/api/v1/users/Me', {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  });
 
-async function loadUser()
+  const data = await res.json();
+  currentUserId = data.user._id;
+
+  console.log("Logged in:", currentUserId);
+}
+
+async function loadContacts()
 {
     const res = await fetch('http://127.0.0.1:8000/api/v1/chat/getChat',
         {
@@ -17,12 +31,121 @@ async function loadUser()
     const users = data.formattedChats;
     let html = '';
     users.forEach(user => {
-        html += `<div class="chat-item" onclick="loadMessages()">${user.name}</div>`
+        html += `<div class="contact-item"  onclick="renderMessages('${user.ChatId}')">
+      <div class="contact-info">
+      <div class="contact-image">
+        😊
+      </div>
+        <div class="contact-name">${user.name}</div>
+      </div>
+      <div class="contact-meta">
+    </div>`
     })
-    document.querySelector(".chat-list").innerHTML = html;
+    document.querySelector(".contact-list").innerHTML = html;
 }
 
-loadUser();
+async function renderMessages(chatId) {
+  const container = document.getElementById('messages');
+    console.log(chatId);
+  try {
+    const res = await fetch(`http://127.0.0.1:8000/api/v1/message/all/${chatId}`,{
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem('token')}`
+  }
+});
+    const data = await res.json();
+
+    const messages = data.messages;
+
+    container.innerHTML = '<div class="date-divider">Today</div>';
+
+    messages.forEach(msg => {
+      appendMessage(msg, false);
+    });
+
+    container.scrollTop = container.scrollHeight;
+
+  } catch (err) {
+    console.error("Error fetching messages:", err);
+  }
+}
+
+async function appendMessage(msg, scroll = true) {
+  const container = document.getElementById('messages');
+  const isMe = msg.sender._id === currentUserId;
+
+  const row = document.createElement('div');
+  row.className = `msg-row ${isMe ? 'sent' : 'received'}`;
+
+  const senderInitials = isMe
+    ? 'ME'
+    : msg.sender.username.substring(0, 2).toUpperCase();
+
+  const avClass = isMe ? 'av-blue' : 'av-green';
+
+  const time = new Date(msg.createdAt).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  row.innerHTML = `
+    ${!isMe ? `<div class="msg-avatar ${avClass}" style="font-size:10px;font-weight:600;">${senderInitials}</div>` : ''}
+
+    <div class="msg-group ${isMe ? 'sent' : 'received'}">
+      <div class="bubble ${isMe ? 'sent' : 'received'}">
+        ${msg.content}
+      </div>
+      <div class="msg-time">${time}</div>
+    </div>
+
+    ${isMe ? `<div class="msg-avatar av-blue" style="font-size:10px;font-weight:600;">ME</div>` : ''}
+  `;
+
+  container.appendChild(row);
+
+  if (scroll) container.scrollTop = container.scrollHeight;
+}
+
+async function init() {
+  await loadCurrentUser();  // ✅ wait until userId is ready
+  await loadContacts();     // then load contacts
+}
+
+init();
+
+sendButton.addEventListener('click', async () => {
+    const message = document.getElementById("msgInput").value;
+
+    if (!message.trim()) return;
+    if (!selectedChatId) {
+        alert("Select a chat first");
+        return;
+    }
+
+    try {
+        const res = await fetch('http://127.0.0.1:8000/api/v1/message', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({
+                chatId: selectedChatId,
+                content: message
+            })
+        });
+
+        const data = await res.json();
+
+        // ✅ append immediately (smooth UI)
+        appendMessage(data.message);
+
+        document.getElementById("msgInput").value = "";
+
+    } catch (err) {
+        console.error("Send message error:", err);
+    }
+});
 // sendButton.addEventListener('click', async () => {
 
 //     const chatId = await sendChatId('69bd9cef0f52fd25e1479f9b');
