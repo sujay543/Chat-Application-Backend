@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Chat UI</title>
+<title>ChatApp</title>
+
 <style>
 body {
     margin: 0;
@@ -13,87 +14,168 @@ body {
 
 /* Sidebar */
 .sidebar {
-    width: 300px;
+    width: 280px;
     background: #1e293b;
     color: white;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 .sidebar h2 {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+}
+
+#newChat {
+    border-radius: 20px;
+    padding: 10px;
+    background-color: #3b82f6;
+    color: white;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+#newChat:hover {
+    background-color: #2563eb;
 }
 
 .chat-list {
     margin-top: 20px;
+    flex: 1;
+    overflow-y: auto;
 }
 
 .chat-item {
     padding: 10px;
     border-radius: 8px;
     cursor: pointer;
+    background: white;
+    color: black;
+    margin-bottom: 10px;
 }
 
 .chat-item:hover {
-    background: #334155;
+    background: #e2e8f0;
 }
 
-/* Main area */
+/* Main Chat Area */
 .main {
     flex: 1;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
     background: #f1f5f9;
+}
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Messages */
+#chatMessages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Message bubbles */
+.message {
+    padding: 10px;
+    margin: 8px 0;
+    max-width: 60%;
+    border-radius: 10px;
+    word-wrap: break-word;
+}
+
+.sent {
+    background: #3b82f6;
+    color: white;
+    align-self: flex-end;
+}
+
+.received {
+    background: #e2e8f0;
+    align-self: flex-start;
+}
+
+/* Input */
+.chat-input {
+    display: flex;
+    padding: 10px;
+    background: white;
+    border-top: 1px solid #ccc;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+.chat-input button {
+    margin-left: 10px;
+    padding: 10px 15px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.chat-input button:hover {
+    background: #2563eb;
 }
 
 .empty-state {
     text-align: center;
     color: #64748b;
+    margin-top: auto;
+    margin-bottom: auto;
 }
-
-.empty-state h2 {
-    margin-bottom: 10px;
-}
-
-#newChat{
-    border-radius: 20px;
-    padding: 15px;
-    background-color: skyblue;
-    font: optimal;
-    color: white;
-    font-size: 20px;
-    width: 300px;
-    cursor: pointer;
-}
-#newChat:hover{
-    background-color: rgb(60, 131, 159);
-}
-
-.chat-item{
-    border: solid;
-    color: black;
-    background-color: white;
-    border-bottom-color: black;
-}
-
 </style>
+
 </head>
 <body>
 
+<!-- Sidebar -->
 <div class="sidebar">
     <h2>ChatApp</h2>
     <button id="newChat">+ New Chat</button>
 
-    <div class="chat-list">
+    <div class="chat-list" id="chatList">
+        <!-- Chats will be added dynamically -->
     </div>
 </div>
 
+<!-- Main -->
 <div class="main">
-    <div class="empty-state">
-        <h2>No chat selected</h2>
-        <p>Select a chat to start messaging</p>
+    <div class="chat-container">
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState">
+            <h2>No chat selected</h2>
+            <p>Select or create a chat to start messaging</p>
+        </div>
+
+        <!-- Messages -->
+        <div id="chatMessages" style=""></div>
+
+        <!-- Input -->
+        <div class="chat-input" id="chatInput" style="">
+            <input type="text" id="messageInput" placeholder="Type a message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+
     </div>
 </div>
+
 <script src="../scripts/index.js"></script>
+
 </body>
 </html>

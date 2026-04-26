@@ -13,10 +13,11 @@ async function loadUser()
     )
 
     const data = await res.json();
+    console.log(data);
     const users = data.formattedChats;
     let html = '';
     users.forEach(user => {
-        html += `<div class="chat-item">${user.name}</div>`
+        html += `<div class="chat-item" onclick="loadMessages()">${user.name}</div>`
     })
     document.querySelector(".chat-list").innerHTML = html;
 }

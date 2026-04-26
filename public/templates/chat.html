@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<style>
+    body {
+    margin: 0;
+    font-family: Arial;
+}
+
+.app {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 25%;
+    background: #111;
+    color: white;
+    padding: 10px;
+}
+
+.user {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #333;
+}
+
+.user:hover {
+    background: #222;
+}
+
+/* Chat */
+.chat-container {
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header {
+    padding: 15px;
+    background: #f1f1f1;
+    font-weight: bold;
+}
+
+.messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.message {
+    margin: 5px 0;
+}
+
+.sent {
+    text-align: right;
+    color: blue;
+}
+
+.received {
+    text-align: left;
+    color: green;
+}
+
+.chat-input {
+    display: flex;
+    padding: 10px;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+}
+
+.chat-input button {
+    padding: 10px;
+}
+</style>
+<body>
+
+<div class="app">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Chats</h2>
+        <div id="userList"></div>
+    </div>
+
+    <!-- Chat Section -->
+    <div class="chat-container">
+
+        <!-- Header -->
+        <div class="chat-header" id="chatHeader">
+            No chat selected
+        </div>
+
+        <!-- Messages -->
+        <div class="messages" id="messages">
+            <p class="no-chat">Select a user to start chatting</p>
+        </div>
+
+        <!-- Input -->
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Type a message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
