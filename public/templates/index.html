@@ -7,7 +7,7 @@
   .app {
     font-family: 'DM Sans', sans-serif;
     display: flex;
-    height: 580px;
+    height: 100vh;
     background: var(--color-background-tertiary);
     border-radius: var(--border-radius-lg);
     overflow: hidden;
@@ -419,9 +419,55 @@
     margin-top: 8px;
     font-size: 15px;
   }
-</style>
 
-<h2 class="sr-only">Chat application interface mockup with sidebar contact list and message area</h2>
+  .sidebar{
+    background-color: #B5D4F4;
+    border-right: gray solid 2px;
+  }
+
+  .chat-header{
+    background-color: #4191e2;
+    border-bottom-left-radius: 2px;
+     border-bottom-right-radius: 2px;
+  }
+
+  .chat-header-status{
+    color: white;
+  }
+
+  .input-area{
+    background-color: silver;
+  }
+
+  .messages{
+    background-image: url('../images/social-networks-dating-apps-vector-seamless-pattern_341076-469\ \(1\).avif');
+  }
+
+
+.bubble.received {
+  background: black;
+  color: white;
+  width: auto;
+  border-radius: 12px;
+  border-bottom-left-radius: 4px;
+  padding: 10px 14px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/*.bubble {
+  word-break: break-word;   /* ✅ prevents weird cuts */
+  /*overflow-wrap: break-word;*/
+
+  .bubble {
+  max-width: 100%;
+}
+.msg-avatar{
+  font-size: 15px;
+}
+.msg-group {
+  max-width: 100%;
+}
+</style>
 
 <div class="app">
   <!-- Sidebar -->
@@ -440,7 +486,7 @@
   <!-- Chat area -->
   <div class="chat-area">
     <div class="chat-header">
-      <div class="avatar av-teal" id="activeAvatar">PR</div>
+      <div class="avatar av-teal" id="activeAvatar">😊</div>
       <div class="chat-header-info">
         <div class="chat-header-name" id="activeName">Priya Rajan</div>
         <div class="chat-header-status">Online</div>

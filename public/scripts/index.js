@@ -2,6 +2,8 @@ const sendButton = document.getElementById("sendBtn");
 // const loadUsers = document.querySelector(".chat-list");
 let currentUserId;
 let selectedChatId = null; 
+
+
 async function loadCurrentUser() {
   const res = await fetch('http://127.0.0.1:8000/api/v1/users/Me', {
     headers: {
@@ -29,9 +31,10 @@ async function loadContacts()
     const data = await res.json();
     console.log(data);
     const users = data.formattedChats;
+
     let html = '';
     users.forEach(user => {
-        html += `<div class="contact-item"  onclick="renderMessages('${user.ChatId}')">
+        html += `<div class="contact-item"  onclick="openChat('${user.ChatId}', '${user.name}')">
       <div class="contact-info">
       <div class="contact-image">
         😊
@@ -44,6 +47,22 @@ async function loadContacts()
     document.querySelector(".contact-list").innerHTML = html;
 }
 
+
+//"openChat('${user.ChatId}', '${user.name}')"
+
+function openChat(ChatId,userName)
+{
+  renderMessages(ChatId);
+  loadHeader(userName);
+}
+async function loadHeader(userName)
+{
+  document.querySelector('.chat-header-info').innerHTML = ` 
+  <div class="chat-header-name" id="activeName">${userName}</div>
+        <div class="chat-header-status">Online</div>`
+}
+
+
 async function renderMessages(chatId) {
   const container = document.getElementById('messages');
     selectedChatId = chatId;
@@ -52,11 +71,9 @@ async function renderMessages(chatId) {
   headers: {
     Authorization: `Bearer ${localStorage.getItem('token')}`
   }
-});
+    });
     const data = await res.json();
-
     const messages = data.messages;
-
     container.innerHTML = '<div class="date-divider">Today</div>';
 
     messages.forEach(msg => {
@@ -75,7 +92,7 @@ async function appendMessage(msg, scroll = true) {
 
   const isMe = msg.sender === currentUserId || msg.sender?._id === currentUserId;
 
-  const senderInitials = isMe ? 'ME' : '??';
+  const senderInitials = isMe ? 'ME' : '😊';
 
   const row = document.createElement('div');
   row.className = `msg-row ${isMe ? 'sent' : 'received'}`;
