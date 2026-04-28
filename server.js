@@ -24,7 +24,10 @@ app.use(cors());
 
 
 io.on("connection", (socket) => {
-    console.log('a new user has connected',socket.id);
+    socket.on('message',(msg) => 
+    {
+        io.emit('message',msg);
+    })
 })
 
 if(process.env.NODE_ENV === 'development')
