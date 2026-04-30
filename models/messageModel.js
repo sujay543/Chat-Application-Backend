@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { encrypt } = require('../utils/encryption.js');
 
 const messageSchema = mongoose.Schema(
     {
@@ -27,7 +28,10 @@ const messageSchema = mongoose.Schema(
             type: String,
             enum: ['sent','delivered','seen'],
             default: 'sent'
-         }
+         },
+         iv: {
+         type: String,  // 👈 add this
+      }
     },
     {
         timestamps: true
@@ -37,6 +41,19 @@ const messageSchema = mongoose.Schema(
 messageSchema.pre(/^find/, function(){
    this.select('-__v');
 })
+
+messageSchema.pre('save', async function(){
+  if (!this.isModified('content') || !this.content) return;
+
+    const encrypted = encrypt(this.content);
+
+    if (!encrypted || !encrypted.content || !encrypted.iv) {
+        throw new Error("Encryption failed");
+    }
+
+    this.content = encrypted.content;
+    this.iv = encrypted.iv;
+});
 
 
 const Message = mongoose.model('Message',messageSchema);

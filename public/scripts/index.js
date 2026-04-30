@@ -53,9 +53,6 @@ async function loadContacts()
     document.querySelector(".contact-list").innerHTML = html;
 }
 
-
-//"openChat('${user.ChatId}', '${user.name}')"
-
 function openChat(ChatId,userName)
 {
   renderMessages(ChatId);
@@ -141,7 +138,6 @@ sendButton.addEventListener('click', async () => {
         alert("Select a chat first");
         return;
     }
-
     try {
         const res = await fetch('http://localhost:8000/api/v1/message', {
             method: "POST",
@@ -154,7 +150,6 @@ sendButton.addEventListener('click', async () => {
                 content: message
             })
         });
-
         const Message = await res.json();
         socket.emit('message',Message.data.message);
         // appendMessage(Message.data.message);

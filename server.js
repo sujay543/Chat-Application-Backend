@@ -11,7 +11,12 @@ const morgan = require('morgan');
 const {Server} = require('socket.io');
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: ["http://127.0.0.1:8000", "http://localhost:8000"],
+    methods: ["GET", "POST"]
+  }
+});
 app.set("io", io);
 app.use(express.json());
 const globalErrorHandler = require('./utils/errorControl.js');
@@ -22,8 +27,8 @@ app.use(cors());
 // all routes above this
 
 
-
 io.on("connection", (socket) => {
+    console.log("socket is connected",socket.id);
     socket.on('message',(msg) => 
     {
         io.emit('message',msg);
