@@ -94,9 +94,6 @@
 
   .contact-item {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 14px;
     cursor: pointer;
     transition: background 0.12s;
     position: relative;
@@ -394,19 +391,19 @@
   .send-btn:active { transform: scale(0.94); }
   .send-btn svg { width: 16px; height: 16px; fill: white; }
 
+  .contact-list{
+    padding: 0;
+  }
   .contact-info{
+    padding: 10px;
     display: flex;
     flex-direction: row;
-    background-color: #F5C4B3;
-    padding: 10px;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-    /* color: white; */
-    font-weight: bold;
+    width: 100vh;
+    color: white;
   }
 
   .contact-info:hover{
-    background-color: #b18475;
+    background-color: #2060d5;
     color: white;
   }
 
@@ -421,7 +418,8 @@
   }
 
   .sidebar{
-    background-color: #B5D4F4;
+    padding: 0;
+    background-color: #3186db;
     border-right: gray solid 2px;
   }
 
@@ -458,7 +456,7 @@
   word-break: break-word;   /* ✅ prevents weird cuts */
   /*overflow-wrap: break-word;*/
 
-  .bubble {
+.bubble {
   max-width: 100%;
 }
 .msg-avatar{
@@ -467,13 +465,41 @@
 .msg-group {
   max-width: 100%;
 }
+
+#msgInput{
+  background-color: white;
+  height: 40px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.usernameLatestMessage
+{
+  margin-top: -4px;
+}
+#latestMessage
+{
+  font-size: 12px;
+}
+.contact-meta
+{
+   margin-left: auto;
+   font-size: 12px;
+}
+.search-input
+{
+  background-color: white;
+}
+.search-input {
+  padding: 7px 10px 7px 32px;
+}
 </style>
 
 <div class="app">
   <!-- Sidebar -->
   <div class="sidebar">
     <div class="sidebar-header">
-      <span class="sidebar-title">Messages</span>
+      <img src="./images/234ec9351efb190d432467ffbde6da6a.jpg" style="width: 70px; border-radius: 50px;">
       <button class="icon-btn" title="New chat">✏️</button>
     </div>
     <div class="search-wrap">

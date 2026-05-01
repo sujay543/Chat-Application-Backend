@@ -1,5 +1,6 @@
 const Chat = require('../models/conversationModel.js');
 const catchAsync = require('../utils/catchAsync.js');
+const { decrypt } = require('../utils/encryption.js');
 const AppError = require('../utils/appError.js');
 
 exports.createChat = catchAsync(async(req,res,next) => {
@@ -42,13 +43,18 @@ exports.getChats = catchAsync(async(req,res,next) => {
     }).populate('users','-password').populate('latestMessage').sort({updatedAt: -1});
     const formattedChats = chats.map(chat => {
         const Otheruser = chat.users.find( user => user._id.toString() != req.user._id.toString());
-
         return {
             ChatId: chat._id,
             name: Otheruser?.username,
-            userId: Otheruser?._id
+            userId: Otheruser?._id,
+            lastMessage: chat.latestMessage
+            ? decrypt(chat.latestMessage)
+            : "No messages yet",
+            lastMessageTime: chat.latestMessage?.createdAt,
+            lastMessageSender: chat.latestMessage?.sender,
         }
     })
+    console.log(formattedChats);
     res.status(200).json({
     status: "success",
     results: formattedChats.length,

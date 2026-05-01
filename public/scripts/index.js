@@ -8,6 +8,7 @@ socket.on('message',msg => {
   if (msg.chatId === selectedChatId) {
     appendMessage(msg);
   }
+  loadContacts()
 })
 
 async function loadCurrentUser() {
@@ -45,12 +46,23 @@ async function loadContacts()
       <div class="contact-image">
         😊
       </div>
+      <div class="usernameLatestMessage">
         <div class="contact-name">${user.name}</div>
+        <p id="latestMessage">${user.lastMessage}</p>
+        </div>
+        <div class="contact-meta">${formatTime(user.lastMessageTime)}</div>
       </div>
-      <div class="contact-meta"></div>
     </div>`
     })
     document.querySelector(".contact-list").innerHTML = html;
+}
+
+function formatTime(date) {
+  if (!date) return '';
+  return new Date(date).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 }
 
 function openChat(ChatId,userName)

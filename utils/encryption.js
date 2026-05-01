@@ -16,14 +16,21 @@ function encrypt(text) {
 }
 
 //decryption function
-function decrypt(encryptedData) {
+function decrypt(message) {
+   if (!message) return '';
+
+    // if already plain text (safety fallback)
+     if (!message.iv) {
+        return message.content;
+    }
+
     const decipher = crypto.createDecipheriv(
         algorithm,
         secretKey,
-        Buffer.from(encryptedData.iv, 'hex')
+        Buffer.from(message.iv, 'hex')
     );
 
-    let decrypted = decipher.update(encryptedData.content, 'hex', 'utf8');
+    let decrypted = decipher.update(message.content, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
 
     return decrypted;

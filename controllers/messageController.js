@@ -14,7 +14,9 @@ exports.sendMessage = catchAsync(async(req,res,next) => {
         {
             return next(new AppError('you need chatId and content for sending message',404));
         }
+
         const chat = await Chat.findById(chatId);
+
         if(!chat)
         {
             return next(new AppError('no conversation exist',400));
