@@ -1,16 +1,19 @@
 const socket = io("http://localhost:8000");
-const sendButton = document.getElementById("sendBtn");
+
 let currentUserId;
-let selectedChatId = null; 
+let selectedChatId = null;
 
-
-socket.on('message',msg => {
+// 🔥 SOCKET LISTENER
+socket.on('message', msg => {
   if (msg.chatId === selectedChatId) {
     appendMessage(msg);
   }
-  loadContacts()
-})
 
+  // ⚠️ Avoid full reload in future (optimize later)
+  loadContacts();
+});
+
+// 🔥 LOAD CURRENT USER
 async function loadCurrentUser() {
   const res = await fetch('http://localhost:8000/api/v1/users/Me', {
     headers: {
@@ -24,39 +27,37 @@ async function loadCurrentUser() {
   console.log("Logged in:", currentUserId);
 }
 
-async function loadContacts()
-{
-    const res = await fetch('http://localhost:8000/api/v1/chat/getChat',
-        {
-            method: "POST",
-            headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}` // if using JWT
-            }
-        }
-    )
+// 🔥 LOAD CONTACTS
+async function loadContacts() {
+  const res = await fetch('http://localhost:8000/api/v1/chat/getChat', {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  });
 
-    const data = await res.json();
-    console.log(data);
-    const users = data.formattedChats;
+  const data = await res.json();
+  const users = data.formattedChats;
 
-    let html = '';
-    users.forEach(user => {
-        html += `<div class="contact-item"  onclick="openChat('${user.ChatId}', '${user.name}')">
-      <div class="contact-info">
-      <div class="contact-image">
-        😊
-      </div>
-      <div class="usernameLatestMessage">
-        <div class="contact-name">${user.name}</div>
-        <p id="latestMessage">${user.lastMessage}</p>
+  let html = '';
+  users.forEach(user => {
+    html += `
+      <div class="contact-item" onclick="openChat('${user.ChatId}', '${user.name}')">
+        <div class="contact-info">
+          <div class="contact-image">😊</div>
+          <div class="usernameLatestMessage">
+            <div class="contact-name">${user.name}</div>
+            <p>${user.lastMessage}</p>
+          </div>
+          <div class="contact-meta">${formatTime(user.lastMessageTime)}</div>
         </div>
-        <div class="contact-meta">${formatTime(user.lastMessageTime)}</div>
-      </div>
-    </div>`
-    })
-    document.querySelector(".contact-list").innerHTML = html;
+      </div>`;
+  });
+
+  document.querySelector(".contact-list").innerHTML = html;
 }
 
+// 🔥 FORMAT TIME
 function formatTime(date) {
   if (!date) return '';
   return new Date(date).toLocaleTimeString([], {
@@ -65,30 +66,40 @@ function formatTime(date) {
   });
 }
 
-function openChat(ChatId,userName)
-{
+// 🔥 OPEN CHAT
+function openChat(ChatId, userName) {
+  selectedChatId = ChatId; // ✅ FIXED
+  loadChatArea();
   renderMessages(ChatId);
   loadHeader(userName);
 }
-async function loadHeader(userName)
-{
-  document.querySelector('.chat-header-info').innerHTML = ` 
-  <div class="chat-header-name" id="activeName">${userName}</div>
-        <div class="chat-header-status">Online</div>`
+
+// 🔥 LOAD HEADER
+function loadHeader(userName) {
+  document.querySelector('.chat-header-area').innerHTML = `
+    <div class="chat-header">
+      <div class="avatar">😊</div>
+      <div class="chat-header-info">
+        <div class="chat-header-name">${userName}</div>
+        <div class="chat-header-status">Online</div>
+      </div>
+    </div>`;
 }
 
-
+// 🔥 RENDER MESSAGES
 async function renderMessages(chatId) {
   const container = document.getElementById('messages');
-    selectedChatId = chatId;
+
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/message/all/${chatId}`,{
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem('token')}`
-  }
+    const res = await fetch(`http://localhost:8000/api/v1/message/all/${chatId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
     });
+
     const data = await res.json();
     const messages = data.messages;
+
     container.innerHTML = '<div class="date-divider">Today</div>';
 
     messages.forEach(msg => {
@@ -100,14 +111,16 @@ async function renderMessages(chatId) {
   } catch (err) {
     console.error("Error fetching messages:", err);
   }
+
+  loadInputArea(); // 🔥 important
 }
 
-async function appendMessage(msg, scroll = true) {
+// 🔥 APPEND MESSAGE
+function appendMessage(msg, scroll = true) {
   const container = document.getElementById('messages');
 
-  const isMe = msg.sender === currentUserId || msg.sender?._id === currentUserId;
-
-  const senderInitials = isMe ? 'ME' : '😊';
+  const senderId = typeof msg.sender === "object" ? msg.sender._id : msg.sender;
+  const isMe = senderId === currentUserId;
 
   const row = document.createElement('div');
   row.className = `msg-row ${isMe ? 'sent' : 'received'}`;
@@ -118,7 +131,7 @@ async function appendMessage(msg, scroll = true) {
   });
 
   row.innerHTML = `
-    ${!isMe ? `<div class="msg-avatar">${senderInitials}</div>` : ''}
+    ${!isMe ? `<div class="msg-avatar">😊</div>` : ''}
 
     <div class="msg-group ${isMe ? 'sent' : 'received'}">
       <div class="bubble ${isMe ? 'sent' : 'received'}">
@@ -135,40 +148,63 @@ async function appendMessage(msg, scroll = true) {
   if (scroll) container.scrollTop = container.scrollHeight;
 }
 
+// 🔥 SEND MESSAGE (FIXED)
+async function sendMessage() {
+  const message = document.getElementById("msgInput").value;
+
+  if (!message.trim()) return;
+  if (!selectedChatId) {
+    alert("Select a chat first");
+    return;
+  }
+
+  try {
+    const res = await fetch('http://localhost:8000/api/v1/message', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({
+        chatId: selectedChatId,
+        content: message
+      })
+    });
+
+    const data = await res.json();
+    socket.emit('message', data.data.message);
+
+    document.getElementById("msgInput").value = "";
+
+  } catch (err) {
+    console.error("Send message error:", err);
+  }
+}
+
+// 🔥 LOAD INPUT AREA (FIXED)
+function loadInputArea() {
+  document.querySelector('.input').innerHTML = `
+    <div class="input-area">
+      <textarea id="msgInput" placeholder="Type a message..."></textarea>
+      <button id="sendBtn">Send</button>
+    </div>`;
+
+  // ✅ attach AFTER render
+  document.getElementById("sendBtn").addEventListener("click", sendMessage);
+}
+
+// 🔥 LOAD CHAT AREA
+function loadChatArea() {
+  document.querySelector('.chat-area').innerHTML = `
+    <div class="chat-header-area"></div>
+    <div class="messages" id="messages"></div>
+    <div class="input"></div>`;
+}
+
+// 🔥 INIT
 async function init() {
-  await loadCurrentUser();  // ✅ wait until userId is ready
-  await loadContacts();     // then load contacts
+  await loadCurrentUser();
+  await loadContacts();
 }
 
 init();
-
-sendButton.addEventListener('click', async () => {
-    const message = document.getElementById("msgInput").value;
-
-    if (!message.trim()) return;
-    if (!selectedChatId) {
-        alert("Select a chat first");
-        return;
-    }
-    try {
-        const res = await fetch('http://localhost:8000/api/v1/message', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify({
-                chatId: selectedChatId,
-                content: message
-            })
-        });
-        const Message = await res.json();
-        socket.emit('message',Message.data.message);
-        // appendMessage(Message.data.message);
-
-        document.getElementById("msgInput").value = "";
-
-    } catch (err) {
-        console.error("Send message error:", err);
-    }
-});
