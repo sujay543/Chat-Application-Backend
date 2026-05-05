@@ -208,3 +208,17 @@ async function init() {
 }
 
 init();
+
+
+
+const popup = document.getElementById('popup');
+const openBtn = document.getElementById('openPopup');
+const closeBtn = document.getElementById('closePopup');
+popup.classList.add('active');
+openBtn.addEventListener('click', () => {
+  popup.classList.add('active');
+});
+
+closeBtn.addEventListener('click', () => {
+  popup.classList.remove('active');
+});

@@ -1,7 +1,8 @@
-
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -679,14 +680,157 @@
   background-color: black;
 }
 
-</style>
+/* POPUP STYLES */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
 
+.popup-box {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+}
+
+/* OPEN BUTTON */
+.open-popup-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #185FA5;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* CLOSE BUTTON */
+.close-btn {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 6px 12px;
+  background: black;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* TOGGLE LOGIC */
+#popup-toggle:checked ~ .popup-overlay {
+  display: flex;
+}
+
+.popup-overlay {
+  display: none;
+}
+
+.popup-overlay.active {
+  display: flex;
+}
+
+.popup-box{
+  display: flex;
+  width: 30%;
+  height: 40%;
+  flex-direction: column;
+}
+
+.popup-header{
+  display: flex;
+  flex-direction: row;
+  font-size: 15px;
+  justify-content: space-between;
+}
+
+#closePopup{
+  background-color: transparent;
+  border:none;
+  font-size: 20px;
+  color: white;
+}
+
+.popup-box{
+  background-color: #178AC8;
+  color: white;
+}
+
+#searchUsers{
+  width: 90%;
+  height: 40px;
+  border-top-left-radius: 30px;
+  border-bottom-left-radius: 30px;
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
+  border: none;
+  outline: thick;
+  padding: 20px 10px;
+}
+
+.search-wrap {
+  position: relative;
+  margin-top: 10px;
+}
+
+#search-button {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 32px;
+  width: 32px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+}
+
+#popUp-list{
+  background-color: white;
+  margin-left: 30px;
+  margin-right: 30px;
+  border-radius: 20px;
+  height: 100px;
+}
+
+button:hover{
+  cursor: pointer;
+}
+</style>
+<!-- POPUP TOGGLE -->
+<!-- POPUP -->
+<div class="popup-overlay" id="popup">
+  <div class="popup-box">
+    <div class="popup-header">
+    <h1>New chat</h1>
+     <button id="closePopup">X</button>
+    </div>
+    <div class="search-wrap">
+      <input type="search" id="searchUsers" placeholder="search by username">
+      <button id="search-button"><i class="fa fa-search"></i></button>
+    </div>
+    <div id="popUp-list">hello</div>
+  </div>
+</div>
+
+<!-- BUTTON TO OPEN POPUP -->
+<!-- <label for="popup-toggle" class="open-popup-btn">
+  Open Popup
+</label> -->
 <div class="app">
   <!-- Sidebar -->
   <div class="sidebar">
     <div class="sidebar-header">
       <img src="./images/234ec9351efb190d432467ffbde6da6a.jpg" style="width: 70px; border-radius: 50px;">
-      <button class="icon-btn" title="New chat">✏️</button>
+      <button class="icon-btn" id="openPopup">✏️</button>
     </div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
